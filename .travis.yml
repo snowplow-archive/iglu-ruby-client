@@ -1,0 +1,21 @@
+language: ruby
+rvm:
+ - 2.0.0
+ - 2.1.10
+ - 2.2.6
+ - 2.4.0
+
+install:
+ - gem install rspec
+ - gem install coveralls
+
+script: rspec
+
+deploy: 
+ provider: rubygems
+ api_key: $RUBYGEMS_SNOWPLOW_API_KEY
+ gemspec: iglu-ruby-client.gemspec
+ on: 
+  tags: true
+  condition: '"$($TRAVIS_BUILD_DIR/.travis/is_valid_tag.rb $TRAVIS_TAG)" == "" && $? == 0'
+
