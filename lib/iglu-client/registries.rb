@@ -65,12 +65,11 @@ module Iglu
         @class_priority = 1
         @descriptor = "embedded"
 
-        @path = path
-        @root = "assets"
+        @root = path
       end
 
       def lookup_schema(schema_key)
-        schema_path = File.join(@root, @path, 'schemas', schema_key.as_path)
+        schema_path = File.join(@root, 'schemas', schema_key.as_path)
         content = File.read(schema_path)
         JSON::parse(content)
       rescue Errno::ENOENT => _
@@ -86,6 +85,10 @@ module Iglu
       def initialize(registry)
         @registry = registry
       end
+
+      def to_s
+        "Not found at #{@registry}"
+      end
     end
 
     class LookupFailure
@@ -95,13 +98,20 @@ module Iglu
         @reason = reason
         @registry = registry
       end
+
+      def to_s
+        "Lookup failure at #{@registry} because #{@reason}"
+      end
     end
 
     class ResolverError < StandardError
-      attr_reader :lookups
+      attr_reader :lookups, :schema_key
 
       def initialize(lookups)
         @lookups = lookups
+        @schema_key = schema_key
+        message = "Schema [#{schema_key.as_uri}] was not found with in [#{lookups.length}] registries with following attempts: [#{lookups.map { |lookup| lookup.to_s }.join('; ')}]"
+        super(message)
       end
     end
 

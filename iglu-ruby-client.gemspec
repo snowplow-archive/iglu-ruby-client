@@ -19,7 +19,6 @@ require 'iglu-client/version'
 Gem::Specification.new do |s|
   s.name        = 'iglu-ruby-client'
   s.version     = Iglu::CLIENT_VERSION
-  s.date        = File.mtime('./lib/iglu-client/version.rb').strftime('%Y-%m-%d')
   s.homepage    = 'http://github.com/snowplow/iglu-ruby-client'
   s.license     = 'Apache License 2.0'
   s.summary     = "A Ruby client for Iglu"
@@ -31,7 +30,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.0.0'
 
   s.add_runtime_dependency "httparty", "<= 0.14.0"
-  s.add_runtime_dependency "json-schema", "~> 2.7.0"
-  s.add_development_dependency "rspec", "~> 2.14.1"
+  s.add_runtime_dependency "json-schema", "~> 2.7.0", '>= 2.7.0'
+  s.add_development_dependency "rspec", "~> 2.14", '>= 2.14.1'
 
 end

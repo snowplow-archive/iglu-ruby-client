@@ -49,4 +49,15 @@ describe Iglu do
 
     expect(resolver.cache.size) === 3
   end
+
+  it 'can lookup schema in bootstrap resolver' do
+    schema_key = Iglu::SchemaKey.new("com.snowplowanalytics.iglu", "resolver-config", "jsonschema", Iglu::SchemaVer.new(1,0,0))
+    schema = Iglu::Registries.bootstrap.lookup_schema(schema_key)
+
+    config = '{ "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#", "description": "Schema for an Iglu resolver\'s configuration", "self": { "vendor": "com.snowplowanalytics.iglu", "name": "resolver-config", "format": "jsonschema", "version": "1-0-0" }, "type": "object", "properties": { "cacheSize": { "type": "number" }, "repositories": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" }, "priority": { "type": "number" }, "vendorPrefixes": { "type": "array", "items": { "type": "string" } }, "connection": { "type": "object", "oneOf": [ { "properties": { "embedded": { "type": "object", "properties": { "path": { "type": "string" } }, "required": ["path"], "additionalProperties": false } }, "required": ["embedded"], "additionalProperties": false }, { "properties": { "http": { "type": "object", "properties": { "uri": { "type": "string", "format": "uri" } }, "required": ["uri"], "additionalProperties": false } }, "required": ["http"], "additionalProperties": false } ] } }, "required": ["name", "priority", "vendorPrefixes", "connection"], "additionalProperties": false } } }, "required": ["cacheSize", "repositories"], "additionalProperties": false }'
+
+    result = JSON.parse(config)
+    expect(schema) == result
+
+  end
 end

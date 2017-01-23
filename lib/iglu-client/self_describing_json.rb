@@ -33,7 +33,7 @@ module Iglu
   
     # Check if JSON is valid (throw exception otherwise)
     def validate(resolver)
-      @valid = resolver.validate(to_json)
+      @valid = resolver.validate(self.to_json)
       @valid
     end
   

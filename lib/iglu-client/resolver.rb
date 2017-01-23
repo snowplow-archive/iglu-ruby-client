@@ -48,7 +48,7 @@ module Iglu
         end
 
         if lookup_result.nil?
-          raise Registries::ResolverError.new failures
+          raise Registries::ResolverError.new(failures, schema_key)
         else
           @cache[schema_key] = lookup_result
           lookup_result
@@ -112,16 +112,15 @@ module Iglu
       JSON::Validator.validate!(schema, data)
     end
 
-
-    # Primary method. Validate self-describing JSON instance
-    def self.validate(json)
-      JSON::Validator.validate!(schema, data)
-    end
-
     def prioritize_repos(schema_key, repository_refs)
       repository_refs.sort_by do |ref|
-        [!ref.vendor_matched(schema_key), ref.class_priority, ref.config.priority]
+        [Resolver.btoi(!ref.vendor_matched(schema_key)), ref.class_priority, ref.config.priority]
       end
+    end
+
+    # Convert boolean to int
+    def self.btoi(b)
+      if b then 1 else 0 end
     end
   end
 end
