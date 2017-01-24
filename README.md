@@ -3,7 +3,7 @@
 [![Build Status] [travis-image]] [travis] 
 [![Release] [release-image]] [releases] 
 [![License] [license-image]] [license] 
-[![Coverage Status] [coverage-image]] [coverage]
+[![Coverage Status] [coveralls-image]] [coveralls]
 
 A Ruby client and resolver for **[Iglu schema repositories] [iglu-wiki]** from the team at **[Snowplow Analytics] [snowplow-website]**.
 
