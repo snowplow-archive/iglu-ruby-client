@@ -107,7 +107,7 @@ module Iglu
     class ResolverError < StandardError
       attr_reader :lookups, :schema_key
 
-      def initialize(lookups)
+      def initialize(lookups, schema_key)
         @lookups = lookups
         @schema_key = schema_key
         message = "Schema [#{schema_key.as_uri}] was not found with in [#{lookups.length}] registries with following attempts: [#{lookups.map { |lookup| lookup.to_s }.join('; ')}]"
