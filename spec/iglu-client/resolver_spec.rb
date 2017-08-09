@@ -26,8 +26,8 @@ describe Iglu do
 
   it 'correctly parses a standard resolver configuration' do
     resolver = Iglu::Resolver.parse(@json_config)
-    expect(resolver.registries.length) == 2
-    expect(resolver.registries[1].config.name) == "Iglu Central"
+    expect(resolver.registries.length).to eq(2)
+    expect(resolver.registries[1].config.name).to eq("Iglu Central")
   end
 
   it 'throws an exception on resolver configuration not matching its JSON Schema' do
@@ -59,7 +59,7 @@ describe Iglu do
     config = '{ "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#", "description": "Schema for an Iglu resolver\'s configuration", "self": { "vendor": "com.snowplowanalytics.iglu", "name": "resolver-config", "format": "jsonschema", "version": "1-0-0" }, "type": "object", "properties": { "cacheSize": { "type": "number" }, "repositories": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" }, "priority": { "type": "number" }, "vendorPrefixes": { "type": "array", "items": { "type": "string" } }, "connection": { "type": "object", "oneOf": [ { "properties": { "embedded": { "type": "object", "properties": { "path": { "type": "string" } }, "required": ["path"], "additionalProperties": false } }, "required": ["embedded"], "additionalProperties": false }, { "properties": { "http": { "type": "object", "properties": { "uri": { "type": "string", "format": "uri" } }, "required": ["uri"], "additionalProperties": false } }, "required": ["http"], "additionalProperties": false } ] } }, "required": ["name", "priority", "vendorPrefixes", "connection"], "additionalProperties": false } } }, "required": ["cacheSize", "repositories"], "additionalProperties": false }'
 
     result = JSON.parse(config)
-    expect(schema) == result
+    expect(schema).to eq(result)
 
   end
 end
