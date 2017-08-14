@@ -41,13 +41,23 @@ module Iglu
         @uri = uri
       end
 
-      def lookup_schema(schema_key)
+      def lookup_schema(schema_key, max_retries = 3)
         schema_uri = "#{@uri}/schemas/#{schema_key.as_path}"
+        times_retried = 0
+
         begin
-          response = HTTParty.get(schema_uri)
+          response = HTTParty.get(schema_uri, timeout: 3)
         rescue SocketError => _
           raise IgluError.new "Iglu registry #{config.name} is not available"
+        rescue Net::ReadTimeout => e
+          if times_retried < max_retries
+            times_retried += 1
+            retry
+          else
+            raise e
+          end
         end
+
         if response.code == 200
           JSON::parse(response.body)
         else
