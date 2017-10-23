@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
     'wiki_uri'        => 'https://github.com/snowplow/iglu/wiki/Ruby-client'
   }
 
-  s.add_runtime_dependency "httparty", "<= 0.14.0"
+  s.add_runtime_dependency "httparty", "~> 0.15.0"
   s.add_runtime_dependency "json-schema", "~> 2.7.0", '>= 2.7.0'
   s.add_development_dependency "rspec", "~> 2.14", '>= 2.14.1'
 
