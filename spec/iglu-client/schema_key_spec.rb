@@ -20,7 +20,7 @@ describe Iglu do
     registry = Iglu::Registries::HttpRegistryRef.new(ref_config, "http://iglucentral.com")
     @resolver = Iglu::Resolver.new([registry])
   }
-  
+
   it 'correctly parses and validate a self-describing JSON' do
     instance = '{"schema": "iglu:com.parrable/decrypted_payload/jsonschema/1-0-0", ' \
                ' "data": {' \
@@ -47,6 +47,22 @@ describe Iglu do
 
   it 'correctly parses SchemaVer into object' do
     expect(Iglu::SchemaVer.parse_schemaver("2-0-3")) == Iglu::SchemaVer.new(2, 0, 3)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (0 based versioning)' do
+    expect { Iglu::SchemaVer.parse_schemaver("0-1-2") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (with lower case letters)' do
+    expect { Iglu::SchemaVer.parse_schemaver("a-b-c") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (with upper case letters)' do
+    expect { Iglu::SchemaVer.parse_schemaver("A-B-C") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (dot formatted)' do
+    expect { Iglu::SchemaVer.parse_schemaver("2.0.3") }.to raise_error(Iglu::IgluError)
   end
 
   it 'throws exception on an incorrect SchemaKey (without iglu protocol)' do

@@ -38,7 +38,11 @@ module Iglu
     # Construct SchemaVer from string
     def self.parse_schemaver(version)
       model, revision, addition = version.scan(SCHEMAVER_REGEX).flatten
-      SchemaVer.new model.to_i, revision.to_i, addition.to_i
+      if model.nil? or revision.nil? or addition.nil?
+          raise IgluError.new "Schema version #{version} is not a valid Iglu SchemaVer"
+      else
+          SchemaVer.new model.to_i, revision.to_i, addition.to_i
+      end
     end
 
     def ==(other)
