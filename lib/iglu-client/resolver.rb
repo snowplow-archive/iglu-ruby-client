@@ -16,11 +16,12 @@ module Iglu
 
   # Iglu Client. Able to fetch schemas only from Iglu Central
   class Resolver
-    attr_reader :registries, :cache
+    attr_reader :registries, :cache, :cache_ttl
 
     def initialize(registries)
       @registries = registries.unshift(Registries.bootstrap)
       @cache = Hash.new
+      @cache_ttl = 1 # hour
     end
 
     # Lookup schema in cache or try to fetch
@@ -30,6 +31,7 @@ module Iglu
       end
       failures = []
 
+      fetch_time = Time.now.getutc
       cache_result = @cache[schema_key]
 
       if cache_result.nil?          # Fetch from every registry
@@ -50,14 +52,22 @@ module Iglu
         if lookup_result.nil?
           raise Registries::ResolverError.new(failures, schema_key)
         else
-          @cache[schema_key] = lookup_result
+          store_time = Time.now.getutc
+          @cache[schema_key] = [lookup_result, store_time]
           lookup_result
         end
       else
         if cache_result.is_a?(Registries::ResolverError)
           raise cache_result
         else
-          cache_result
+          if cache_result.is_a? (Array)
+              if (cache_result[1] - fetch_time).round / 3600 >= @cache_ttl
+                @cache.delete(schema_key)
+              end
+              cache_result[0]
+          else # backward compliance
+              cache_result
+          end
         end
       end
     end
@@ -81,7 +91,7 @@ module Iglu
         Registries::EmbeddedRegistryRef.new(ref_config, config[:connection][:embedded][:path])
       elsif not config[:connection][:http].nil?
         Registries::HttpRegistryRef.new(ref_config, config[:connection][:http][:uri])
-      else 
+      else
         raise IgluError.new "Incorrect RegistryRef"
       end
     end
