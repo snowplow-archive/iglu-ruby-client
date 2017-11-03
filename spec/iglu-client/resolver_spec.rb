@@ -22,13 +22,47 @@ describe Iglu do
     # cacheSize cannot be null
     invalid_config = '{"schema": "iglu:com.snowplowanalytics.iglu/resolver-config/jsonschema/1-0-0", "data": { "cacheSize": null, "repositories": [ { "name": "Iglu Central", "priority": 1, "vendorPrefixes": [ "com.snowplowanalytics" ], "connection": { "http": { "uri": "http://iglucentral.com" } } } ] } }'
     @json_invalid_config = JSON.parse(invalid_config, {:symbolize_names => true})
+
+    config_with_cacheTttl = '{"schema": "iglu:com.snowplowanalytics.iglu/resolver-config/jsonschema/1-0-2", "data": { "cacheSize": 500, "cacheTtl": 5, "repositories": [ { "name": "Iglu Central", "priority": 0, "vendorPrefixes": [ "com.snowplowanalytics" ], "connection": { "http": { "uri": "http://iglucentral.com" } } } ] } }'
+    @json_config_with_cacheTtl = JSON.parse(config_with_cacheTttl, {:symbolize_names => true})
+
+    config_with_null_cacheTttl = '{"schema": "iglu:com.snowplowanalytics.iglu/resolver-config/jsonschema/1-0-2", "data": { "cacheSize": 500, "cacheTtl": null, "repositories": [ { "name": "Iglu Central", "priority": 0, "vendorPrefixes": [ "com.snowplowanalytics" ], "connection": { "http": { "uri": "http://iglucentral.com" } } } ] } }'
+    @json_config_with_null_cacheTtl = JSON.parse(config_with_null_cacheTttl, {:symbolize_names => true})
   }
 
   it 'correctly parses a standard resolver configuration' do
     resolver = Iglu::Resolver.parse(@json_config)
-    expect(resolver.registries.length).to eq(2)
+    expect(resolver.registries.size).to eq(2)
+    expect(resolver.cacheTtl).to eq(60)
     expect(resolver.registries[1].config.name).to eq("Iglu Central")
   end
+
+  it 'correctly parses a standard resolver configuration containing cacheTtl (not null)' do
+    resolver = Iglu::Resolver.parse(@json_config_with_cacheTtl)
+    expect(resolver.registries.size).to eq(2)
+    expect(resolver.cacheTtl).to eq(5)
+    expect(resolver.registries[1].config.name).to eq("Iglu Central")
+  end
+
+  it 'correctly parses a standard resolver configuration containing cacheTtl (null)' do
+    resolver = Iglu::Resolver.parse(@json_config_with_null_cacheTtl)
+    expect(resolver.registries.size).to eq(2)
+    expect(resolver.cacheTtl).to eq(60)
+    expect(resolver.registries[1].config.name).to eq("Iglu Central")
+  end
+
+  it 'properly invalidates resolver cache per cacheTtl' do
+    resolver = Iglu::Resolver.parse(@json_config_with_cacheTtl)
+    expect(resolver.cache.size).to eq(0)
+    schema = resolver.lookup_schema(@json_config_with_cacheTtl[:schema])
+    expect(resolver.cache.size).to eq(1)
+    sleep resolver.cacheTtl
+    # expect that next request after cacheTtl is undertaken and cache is invalidated
+    schema = resolver.lookup_schema(@json_config_with_cacheTtl[:schema])
+    expect(schema["self"]["version"]).to eq("1-0-2")
+    expect(resolver.cache.size).to eq(0)
+  end
+
 
   it 'throws an exception on resolver configuration not matching its JSON Schema' do
     expect { Iglu::Resolver.parse(@json_invalid_config) }.to raise_error(JSON::Schema::ValidationError)

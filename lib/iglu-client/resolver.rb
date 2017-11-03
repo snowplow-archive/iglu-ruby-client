@@ -16,11 +16,12 @@ module Iglu
 
   # Iglu Client. Able to fetch schemas only from Iglu Central
   class Resolver
-    attr_reader :registries, :cache
+    attr_reader :registries, :cache, :cacheTtl
 
-    def initialize(registries)
+    def initialize(registries, cacheTtl=60)
       @registries = registries.unshift(Registries.bootstrap)
       @cache = Hash.new
+      @cacheTtl = cacheTtl.nil? ? 60 : cacheTtl
     end
 
     # Lookup schema in cache or try to fetch
@@ -30,6 +31,7 @@ module Iglu
       end
       failures = []
 
+      fetch_time = Time.now.getutc
       cache_result = @cache[schema_key]
 
       if cache_result.nil?          # Fetch from every registry
@@ -50,14 +52,24 @@ module Iglu
         if lookup_result.nil?
           raise Registries::ResolverError.new(failures, schema_key)
         else
-          @cache[schema_key] = lookup_result
+          store_time = Time.now.getutc
+          @cache[schema_key] = [lookup_result, store_time]
           lookup_result
         end
       else
         if cache_result.is_a?(Registries::ResolverError)
           raise cache_result
         else
-          cache_result
+          if cache_result.is_a? (Array)
+              store_time = cache_result[1]
+              time_diff = (fetch_time - store_time).round
+              if time_diff >= @cacheTtl
+                 @cache.delete(schema_key)
+               end
+               cache_result[0]
+          else # backward compliance
+              cache_result
+          end
         end
       end
     end
@@ -67,9 +79,9 @@ module Iglu
       schema = Registries.bootstrap.lookup_schema(schema_key)
       data = get_data(json)
       if JSON::Validator.validate!(schema, data)
-        # cache_size = data[:cacheSize]
         registries = data[:repositories].map do |registry| parse_registry(registry) end
-        Resolver.new(registries)
+        cacheTtl = json[:data][:cacheTtl]
+        Resolver.new(registries, cacheTtl)
       else
         throw IgluError.new "Invalid resolver configuration"
       end
@@ -81,7 +93,7 @@ module Iglu
         Registries::EmbeddedRegistryRef.new(ref_config, config[:connection][:embedded][:path])
       elsif not config[:connection][:http].nil?
         Registries::HttpRegistryRef.new(ref_config, config[:connection][:http][:uri])
-      else 
+      else
         raise IgluError.new "Incorrect RegistryRef"
       end
     end
