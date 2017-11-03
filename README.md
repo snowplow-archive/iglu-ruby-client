@@ -45,7 +45,7 @@ limitations under the License.
 [travis-image]: https://travis-ci.org/snowplow/iglu-ruby-client.png?branch=master
 
 [releases]: https://github.com/snowplow/ruby-iglu-client/releases
-[release-image]: http://img.shields.io/badge/release-0.1.0-blue.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.2.0-blue.svg?style=flat
 
 [license]: http://www.apache.org/licenses/LICENSE-2.0
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat

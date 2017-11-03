@@ -10,5 +10,5 @@
 # See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
 module Iglu
-  CLIENT_VERSION = '0.1.0'
+  CLIENT_VERSION = '0.2.0'
 end
