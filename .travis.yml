@@ -21,6 +21,7 @@ deploy:
   gemspec: iglu-ruby-client.gemspec
   on:
    tags: true
+   condition: '"$($TRAVIS_BUILD_DIR/.travis/is_valid_tag.rb $TRAVIS_TAG)" == "" && $? == 0'
 
 env:
   global:
