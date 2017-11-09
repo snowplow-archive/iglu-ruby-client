@@ -20,7 +20,7 @@ describe Iglu do
     registry = Iglu::Registries::HttpRegistryRef.new(ref_config, "http://iglucentral.com")
     @resolver = Iglu::Resolver.new([registry])
   }
-  
+
   it 'correctly parses and validate a self-describing JSON' do
     instance = '{"schema": "iglu:com.parrable/decrypted_payload/jsonschema/1-0-0", ' \
                ' "data": {' \
@@ -28,7 +28,7 @@ describe Iglu do
                '   "deviceid": "asdfasdfasdfasdfcwer234fa$#ds±f324jo"' \
                ' }' \
                '}'
-    expect(Iglu::SelfDescribingJson.parse_json(JSON.parse(instance)).valid?(@resolver)) == true
+    expect(Iglu::SelfDescribingJson.parse_json(JSON.parse(instance)).valid?(@resolver)).to eq(true)
   end
 
   it 'correctly parses and invalidate an invalid self-describing JSON' do
@@ -38,15 +38,39 @@ describe Iglu do
                '   "deviceid": "asdfasdfasdfasdfcwer234fa$#ds±f324joa"' \
                ' }' \
                '}'
-    expect(Iglu::SelfDescribingJson.parse_json(JSON.parse(instance)).valid?(@resolver)) == false
+    expect(Iglu::SelfDescribingJson.parse_json(JSON.parse(instance)).valid?(@resolver)).to eq(false)
   end
 
   it 'correctly parses Iglu URI into object' do
-    expect(Iglu::SchemaKey.parse_key("iglu:com.snowplowanalytics.snowplow/event/jsonschema/1-0-1")) == Iglu::SchemaKey.new("com.snowplowanalytics.snowplow", "event", "jsonschema", Iglu::SchemaVer.new(1, 0, 1))
+    expect(Iglu::SchemaKey.parse_key("iglu:com.snowplowanalytics.snowplow/event/jsonschema/1-0-1")).to eq(Iglu::SchemaKey.new("com.snowplowanalytics.snowplow", "event", "jsonschema", Iglu::SchemaVer.new(1, 0, 1)))
   end
 
-  it 'correctly parses SchemaVer into object' do
-    expect(Iglu::SchemaVer.parse_schemaver("2-0-3")) == Iglu::SchemaVer.new(2, 0, 3)
+  it 'correctly parses SchemaVer into object (single-digit versions)' do
+    expect(Iglu::SchemaVer.parse_schemaver("2-0-3")).to eq(Iglu::SchemaVer.new(2, 0, 3))
+  end
+
+  it 'correctly parses SchemaVer into object (multiple-digits versions)' do
+    expect(Iglu::SchemaVer.parse_schemaver("10-0-112")).to eq(Iglu::SchemaVer.new(10, 0, 112))
+  end
+
+  it 'throws exception on an incorrect SchemaVer (letter-digit mixed)' do
+    expect { Iglu::SchemaVer.parse_schemaver("10-a-1") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (0 based versioning)' do
+    expect { Iglu::SchemaVer.parse_schemaver("0-1-2") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (with lower case letters)' do
+    expect { Iglu::SchemaVer.parse_schemaver("a-b-c") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (with upper case letters)' do
+    expect { Iglu::SchemaVer.parse_schemaver("A-B-C") }.to raise_error(Iglu::IgluError)
+  end
+
+  it 'throws exception on an incorrect SchemaVer (dot formatted)' do
+    expect { Iglu::SchemaVer.parse_schemaver("2.0.3") }.to raise_error(Iglu::IgluError)
   end
 
   it 'throws exception on an incorrect SchemaKey (without iglu protocol)' do
@@ -65,7 +89,7 @@ describe Iglu do
                ' }' \
                '}'
     json = JSON::parse(instance)
-    expect(@resolver.validate(json)) == true
+    expect(@resolver.validate(json)).to eq(true)
   end
 
   it 'correctly invalidates self-describing JSON (wrong string length) by returning exception' do

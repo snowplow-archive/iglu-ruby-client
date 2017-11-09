@@ -1,6 +1,5 @@
 language: ruby
 rvm:
- - 2.0.0
  - 2.1.10
  - 2.2.6
  - 2.4.0
@@ -15,12 +14,13 @@ install:
 
 script: rspec
 
-deploy: 
-  provider: script
-  script: .travis/deploy.sh
-  on: 
-    tags: true
-    condition: '"$($TRAVIS_BUILD_DIR/.travis/is_valid_tag.rb $TRAVIS_TAG)" == "" && $? == 0'
+deploy:
+  provider: rubygems
+  api_key: $RUBYGEMS_SNOWPLOW_API_KEY
+  gemspec: iglu-ruby-client.gemspec
+  on:
+   tags: true
+
 env:
   global:
     secure: uNmI6nlc79u4gqiIrPdDevxSTin2ia45JjjF/TShatvj06zoGFtnvSLoY2WjPJr+HnEnX4ZJI5CHAsXhx0g8ND+59RZkiNd+StDrPQzRrPNTrJsVsQCZL/EQb3aYyRGU5mS413k2I0h8u9oefqgNuhAZOXe1MYtmjJgwLrgqu9A+sZomgCQWCdxyO+mKRdh8cmMCUK+dvtv3tycZ/eu5NV5uqOdjfRahMDG7gLkchfes/VlPlg01AjyFkSx0ZS6Lc2BDE7uXs/ZXl5SoH8xR8TsYLt1nPJ8iKVKtG8mKqhumHUxvRcL+khDF/bltSSmVylarn1BAA5fHPPRhLa00Bk78xfHAwQSvMh4kZQakL2i/xFCnZ3N30Ztr049y7C5yiZOGAzvsiUrmVrSVoKyb6zI5ZSi4Hez2olhIbIjCShnhTowbBZ8y05nw8DxV2Wi0kZgyKCiyHlk6LRfZwfO30SM/KJWR+o37s1W+Ei2jwJEGACpYmg5OIK2howuKWJv++mUbn3PsjvP8nL1UzTP85Fqcyn1K3xn1GlJyYtFwi+xiONlCTXA1zMbpBLjRiwGouMOlww49RTaD0ZcnednRTt3y5Ad2F/+sXwcAHkeqBiDLqGQSyqvzufOOqtchqscZUVvP58H+a2f7Y4jIJCUiF/m6SfYqLcwuDZTeklVRAHw=

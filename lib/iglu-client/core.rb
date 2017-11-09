@@ -20,15 +20,7 @@ module Iglu
   SCHEMAVER_REGEX = Regexp.new "^([1-9][0-9]*)-(0|[1-9][0-9]*)-(0|[1-9][0-9]*)$"
 
   # Class holding SchemaVer data
-  class SchemaVer
-    attr_accessor :model, :revision, :addition
-
-    # Constructor. To initalize from string - use static parse_schemaver
-    def initialize(model, revision, addition)
-      @model = model
-      @revision = revision
-      @addition = addition
-    end
+  class SchemaVer < Struct.new(:model, :revision, :addition)
 
     # Render as string
     def as_string
@@ -38,26 +30,17 @@ module Iglu
     # Construct SchemaVer from string
     def self.parse_schemaver(version)
       model, revision, addition = version.scan(SCHEMAVER_REGEX).flatten
-      SchemaVer.new model.to_i, revision.to_i, addition.to_i
-    end
-
-    def ==(other)
-      other.model == @model && other.revision == @revision && other.addition == @addition
+      if model.nil? or revision.nil? or addition.nil?
+          raise IgluError.new "Schema version #{version} is not a valid Iglu SchemaVer"
+      else
+          SchemaVer.new model.to_i, revision.to_i, addition.to_i
+      end
     end
   end
 
 
   # Class holding Schema metadata
-  class SchemaKey
-    attr_accessor :vendor, :name, :format, :version
-
-    # Constructor. To initalize from string - use static parse_key
-    def initialize(vendor, name, format, version)
-      @vendor = vendor
-      @name = name
-      @format = format
-      @version = version
-    end
+  class SchemaKey < Struct.new(:vendor, :name, :format, :version)
 
     # Render as Iglu URI (with `iglu:`)
     def as_uri
@@ -78,10 +61,6 @@ module Iglu
         schema_ver = SchemaVer.parse_schemaver(version)
         SchemaKey.new vendor, name, format, schema_ver
       end
-    end
-
-    def ==(other)
-      other.vendor == @vendor && other.name == @name && other.format == @format && other.version == @version
     end
   end
 
