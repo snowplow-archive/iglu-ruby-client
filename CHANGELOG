@@ -1,3 +1,14 @@
+Version 0.2.0 (2017-11-09)
+--------------------------
+Fix SchemaVer.parse_schemaver parses invalid SchemaVer (#7)
+Update README markdown in according with CommonMark (#13)
+Fix invalid cache-lookup (#11)
+Add retry-policy (#10)
+Add configurable cache max-age for schemas (#6)
+Switch to rubygems provider (#5)
+Remove Ruby 2.0.0 support (#15)
+Remove unnecessary ResolverError check from cache (#16)
+
 Version 0.1.0 (2017-02-08)
 --------------------------
 Initial release
