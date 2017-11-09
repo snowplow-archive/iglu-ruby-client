@@ -70,10 +70,6 @@ module Iglu
           @cache[schema_key] = [lookup_result, store_time]
           lookup_result
         end
-      else
-        if cache_result.is_a?(Registries::ResolverError)
-          raise cache_result
-        end
       end
     end
 
