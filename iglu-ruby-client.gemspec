@@ -36,5 +36,4 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "httparty", "~> 0.15.0"
   s.add_runtime_dependency "json-schema", '>= 2.7.0'
   s.add_development_dependency "rspec", "~> 3.4.0"
-
 end
