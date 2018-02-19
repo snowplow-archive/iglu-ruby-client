@@ -14,10 +14,10 @@ require "json-schema"
 module Iglu
 
   # Regular expression to extract metadata from self-describing JSON
-  URI_REGEX = Regexp.new "^iglu:([a-zA-Z0-9\\-_.]+)\/([a-zA-Z0-9\\-_]+)\/([a-zA-Z0-9\\-_]+)\/([1-9][0-9]*(?:-(?:0|[1-9][0-9]*)){2})$"
+  URI_REGEX = Regexp.new "^iglu:([a-zA-Z0-9\\-_.]+)\/([a-zA-Z0-9\\-_]+)\/([a-zA-Z0-9\\-_]+)\/((0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*)){2})$"
 
   # Regular expression to extract all parts of SchemaVer: MODEL, REVISION, ADDITION
-  SCHEMAVER_REGEX = Regexp.new "^([1-9][0-9]*)-(0|[1-9][0-9]*)-(0|[1-9][0-9]*)$"
+  SCHEMAVER_REGEX = Regexp.new "^(0|[1-9][0-9]*)-(0|[1-9][0-9]*)-(0|[1-9][0-9]*)$"
 
   # Class holding SchemaVer data
   class SchemaVer < Struct.new(:model, :revision, :addition)

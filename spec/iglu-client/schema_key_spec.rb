@@ -57,10 +57,6 @@ describe Iglu do
     expect { Iglu::SchemaVer.parse_schemaver("10-a-1") }.to raise_error(Iglu::IgluError)
   end
 
-  it 'throws exception on an incorrect SchemaVer (0 based versioning)' do
-    expect { Iglu::SchemaVer.parse_schemaver("0-1-2") }.to raise_error(Iglu::IgluError)
-  end
-
   it 'throws exception on an incorrect SchemaVer (with lower case letters)' do
     expect { Iglu::SchemaVer.parse_schemaver("a-b-c") }.to raise_error(Iglu::IgluError)
   end
