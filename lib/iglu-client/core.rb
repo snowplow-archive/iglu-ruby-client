@@ -66,10 +66,9 @@ module Iglu
 
 
   # Custom validator, allowing to use self-describing JSON Schemas
-  class SelfDescribingSchema < JSON::Schema::Validator
+  class SelfDescribingSchema < JSON::Schema::Draft4
     def initialize
       super
-      extend_schema_definition("http://json-schema.org/draft-04/schema#")
       @uri = URI.parse("http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#")
     end
 
